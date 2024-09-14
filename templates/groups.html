@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}View All Groups{% endblock %}
+{% block content %}
+    <h2>Groups and Tasks</h2>
+    {% for group in groups %}
+        <h3>Group: {{ group.name }}</h3>
+        <h4>Participants:</h4>
+        <ul>
+            {% for user in group.users %}
+                <li>{{ user.name }}</li>
+            {% endfor %}
+        </ul>
+        <h4>Tasks:</h4>
+        <ul>
+            {% for task in group.tasks %}
+                <li>
+                    <strong>{{ task.title }}</strong> - {{ task.description }} - Status: {{ task.status }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}

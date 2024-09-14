@@ -1,6 +1,21 @@
 {% extends "base.html" %}
-{% block title%} Home page {% endblock %}
-
+{% block title %}Your Groups{% endblock %}
 {% block content %}
-
+    <h2>Welcome, {{ session['user'] }}!</h2>
+    <h3>Your Groups:</h3>
+    {% if user_groups %}
+        {% for group in user_groups %}
+            <h4>Group: {{ group.name }}</h4>
+            <h5>Tasks:</h5>
+            <ul>
+                {% for task in group.tasks %}
+                    <li>
+                        <strong>{{ task.title }}</strong> - {{ task.description }} - Status: {{ task.status }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>You are not part of any group yet.</p>
+    {% endif %}
 {% endblock %}
