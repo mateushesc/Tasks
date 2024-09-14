@@ -1,22 +1,42 @@
 {% extends "base.html" %}
-{% block title %}View All Groups{% endblock %}
+{% block title %}Manage Groups{% endblock %}
 {% block content %}
-    <h2>Groups and Tasks</h2>
+    <h1>Manage Groups</h1>
+
+    <!-- Form to add a new group -->
+    <h2>Add New Group</h2>
+    <form action="{{ url_for('add_group') }}" method="POST">
+        <input type="text" name="group_name" placeholder="Group Name" required>
+        <button type="submit">Add Group</button>
+    </form>
+
+    <!-- Existing Groups and Tasks -->
+    <h2>Existing Groups</h2>
     {% for group in groups %}
-        <h3>Group: {{ group.name }}</h3>
-        <h4>Participants:</h4>
-        <ul>
-            {% for user in group.users %}
-                <li>{{ user.name }}</li>
+        <h3>{{ group.name }}</h3>
+        <p>Members: 
+            {% for member in group.members %}
+                {{ member.name }}{% if not loop.last %}, {% endif %}
             {% endfor %}
-        </ul>
-        <h4>Tasks:</h4>
+        </p>
+        <p>Tasks:</p>
         <ul>
             {% for task in group.tasks %}
-                <li>
-                    <strong>{{ task.title }}</strong> - {{ task.description }} - Status: {{ task.status }}
-                </li>
+                <li>{{ task.title }} - {{ task.status }}: {{ task.description }}</li>
             {% endfor %}
         </ul>
+
+        <h4>Add Task to {{ group.name }}</h4>
+        <form action="{{ url_for('add_task') }}" method="POST">
+            <input type="text" name="task_title" placeholder="Task Title" required>
+            <input type="text" name="task_description" placeholder="Task Description" required>
+            <select name="task_status">
+                <option value="Pendente">Pendente</option>
+                <option value="Iniciada">Iniciada</option>
+                <option value="Finalizada">Finalizada</option>
+            </select>
+            <input type="hidden" name="group_id" value="{{ group._id }}">
+            <button type="submit">Add Task</button>
+        </form>
     {% endfor %}
 {% endblock %}

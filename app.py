@@ -60,7 +60,9 @@ def home():
 
 @app.route("/view")
 def view():
-    return render_template("view.html", values=users.query.all())
+    all_users = users.query.all()
+    all_groups = groups.query.all()
+    return render_template("view.html", values=all_users, groups=all_groups)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -113,6 +115,60 @@ def user():
 def view_groups():
     all_groups = groups.query.all()
     return render_template("groups.html", groups=all_groups)
+
+@app.route("/add_group", methods=["POST"])
+def add_group():
+    group_name = request.form["group_name"]
+    
+    if group_name:
+        new_group = groups(name=group_name)
+        db.session.add(new_group)
+        db.session.commit()
+        flash(f"Group '{group_name}' added successfully!")
+    else:
+        flash("Group name cannot be empty.")
+    
+    return redirect(url_for("view_groups"))
+
+
+@app.route("/add_to_group", methods=["POST"])
+def add_to_group():
+    user_id = request.form["user_id"]
+    group_id = request.form["group_id"]
+
+    user = users.query.get(user_id)
+    group = groups.query.get(group_id)
+
+    if user and group:
+        if user not in group.members:
+            group.members.append(user)
+            db.session.commit()
+            flash(f"User {user.name} added to group {group.name}!")
+        else:
+            flash(f"User {user.name} is already in group {group.name}.")
+    else:
+        flash("Error: User or group not found.")
+
+    return redirect(url_for("view"))
+
+@app.route("/add_task", methods=["POST"])
+def add_task():
+    task_title = request.form["task_title"]
+    task_description = request.form["task_description"]
+    task_status = request.form["task_status"]
+    group_id = request.form["group_id"]
+
+    group = groups.query.get(group_id)
+
+    if group:
+        new_task = Tasks(title=task_title, description=task_description, status=task_status, group_id=group_id)
+        db.session.add(new_task)
+        db.session.commit()
+        flash(f"Task '{task_title}' added to group '{group.name}' successfully!")
+    else:
+        flash("Group not found.")
+
+    return redirect(url_for("view_groups"))
     
 @app.route("/logout")
 def logout():

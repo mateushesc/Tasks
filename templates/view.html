@@ -1,11 +1,21 @@
 {% extends "base.html" %}
-{% block title %}View All Users{% endblock %}
+{% block title %}Manage Users{% endblock %}
 {% block content %}
+    <h1>Manage Users</h1>
     {% for item in values %}
         <p>
             Name: {{ item.name }}, Email: {{ item.email }}
             <form action="{{ url_for('delete', user_id=item._id) }}" method="POST" style="display:inline;">
                 <button type="submit">Delete</button>
+            </form>
+            <form action="{{ url_for('add_to_group') }}" method="POST" style="display:inline;">
+                <select name="group_id">
+                    {% for group in groups %}
+                        <option value="{{ group._id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="user_id" value="{{ item._id }}">
+                <button type="submit">Add to Group</button>
             </form>
         </p>
     {% endfor %}
